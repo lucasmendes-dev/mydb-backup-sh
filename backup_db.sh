@@ -25,6 +25,7 @@ echo "[OK] Backup created: ${FILE_NAME}"
 # ===== 2. Go to repository folder and commit =====
 cd "$BACKUP_DIR" || { echo "[ERROR] Can't access $BACKUP_DIR"; exit 1; }
 
+git pull
 git add "${FILE_NAME}"
 git commit -m "Your commit message..."
 git push origin main  # adjust 'main' if your branchh has another name

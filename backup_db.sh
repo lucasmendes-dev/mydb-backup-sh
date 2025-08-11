@@ -9,8 +9,21 @@ DB_USER="db-user"
 DB_PASS="db-password"
 DB_NAME="db-name"
 BACKUP_DIR="ec2/backup/dir"
-DATE=$(date +"%Y-%m-%d_%H-%M-%S")
+DATE=$(date +"%Y-%m-%d_%H:%M:%S")
 FILE_NAME="${DB_NAME}[backup]-${DATE}.sql.gz"
+
+# ===== 0. Update Repository =====
+cd "$BACKUP_DIR" || { echo "[ERROR] Cant' access $BACKUP_DIR"; exit 1; }
+echo "[INFO] Updating repository..."
+git pull origin main
+if [ $? -ne 0 ]; then
+    echo "[ERROR] Failed to update local repository."
+    exit 1
+fi
+echo "[OK] Repository Updated."
+
+# move back to root
+cd ~
 
 # ===== 1. Create a database dump and compress it =====
 echo "[INFO] Starting '$DB_NAME' DB backup..."
@@ -25,7 +38,6 @@ echo "[OK] Backup created: ${FILE_NAME}"
 # ===== 2. Go to repository folder and commit =====
 cd "$BACKUP_DIR" || { echo "[ERROR] Can't access $BACKUP_DIR"; exit 1; }
 
-git pull
 git add "${FILE_NAME}"
 git commit -m "Your commit message..."
 git push origin main  # adjust 'main' if your branchh has another name
